@@ -29,6 +29,25 @@ def get_db_connection():
         return None
 
 def init_db():
+    # Primero conectar sin especificar base de datos
+    temp_config = {
+        'host': os.getenv('DB_HOST', 'localhost'),
+        'port': int(os.getenv('DB_PORT', 3306)),
+        'user': os.getenv('DB_USER', 'root'),
+        'password': os.getenv('DB_PASSWORD', ''),
+    }
+    try:
+        temp_conn = mysql.connector.connect(**temp_config)
+        temp_cursor = temp_conn.cursor()
+        temp_cursor.execute("CREATE DATABASE IF NOT EXISTS products_db")
+        temp_conn.commit()
+        temp_cursor.close()
+        temp_conn.close()
+        print("Database products_db ready")
+    except Error as e:
+        print(f"Error creating database: {e}")
+
+    # Ahora conectar con la base de datos correcta
     connection = get_db_connection()
     if connection:
         cursor = connection.cursor()
